@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<style>
+		body{
+			margin: 0;
+			background-color: black;
+			color: green;
+			font-family: monospace;
+			font-size: 16px;
+			overflow-x: hidden;
+		}
+		input{
+			width: 100%;
+			background-color: black;
+			border: 0;
+			outline: 0;
+			color: green;
+			font-family: monospace;
+			font-size: 16px;
+		}
+		p{
+			margin: 0;
+		}
+	</style>
+	<script src="socket.io/socket.io.js"></script>
+	<script src="helpers.js"></script>
+</head>
+<body>
+	<input type="text">
+	<p></p>
+	<script>
+		const socket = io();
+		let coms = [];
+		obj('input').focus();
+		document.on('keydown',e=>{
+			if(e.keyCode == 13){
+				let com = obj('input').value;
+				run(com);
+				coms.unshift(com);
+				obj('input').value = '';
+				obj('input').focus();
+				log(com);
+			}
+		});
+
+		function log(data){
+			console.log(data);
+			obj('p').innerHTML = data + '<br>' + obj('p').innerHTML;
+		}
+
+		function run(com){
+			socket.emit('com',com);
+		}
+
+		socket.on('result',data=>{
+			data = data.replaceAll('<','&lt;')
+			for(let line of data.split('\n')) log(line.trim());
+		});
+	</script>
+</body>
+</html>
